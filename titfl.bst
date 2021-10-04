@@ -1,12 +1,12 @@
 %%
-%% This is file `tufte.bst',
+%% This is file `titfl.bst',
 %% generated with the docstrip utility.
 %%
 %% The original source files were:
 %%
 %% merlin.mbs  (with options: `seq-no,vonx,ed-au,nmlm,x2,m1,yr-com,xmth,tit-qq,qx,atit-u,jxper,trtit-b,volp-com,jwdpg,pp-last,num-xser,pre-pub,edpar,edby,blk-com,pp,ed,abr,ord,url,url-blk,nfss')
 %% ----------------------------------------
-%% *** tufte handout bibliography style ***
+%% *** titfl handout bibliography style ***
 %% 
 %% Copyright 1994-2002 Patrick W Daly
  % ===============================================================
@@ -1311,4 +1311,4 @@ FUNCTION {end.bib}
 EXECUTE {end.bib}
 %% End of customized bst file
 %%
-%% End of file `tufte.bst'.
+%% End of file `titfl.bst'.

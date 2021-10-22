@@ -398,9 +398,9 @@
 }
 \renewcommand\scriptsize{\@setfontsize\scriptsize\@viipt\@viiipt}
 \renewcommand\tiny{\@setfontsize\tiny\@vpt\@vipt}
-\renewcommand\large{\@setfontsize\large\@xipt{15}}
-\renewcommand\Large{\@setfontsize\Large\@xiipt{16}}
-\renewcommand\LARGE{\@setfontsize\LARGE\@xivpt{18}}
+\renewcommand\large{\@setfontsize\large\@xipt{18}}
+\renewcommand\Large{\@setfontsize\Large\@xiipt{20}}
+\renewcommand\LARGE{\@setfontsize\LARGE\@xivpt{24}}
 \renewcommand\huge{\@setfontsize\huge\@xxpt{30}}
 \renewcommand\Huge{\@setfontsize\Huge{24}{36}}
 
@@ -1507,9 +1507,9 @@
 % The 'fancy' page style is the default style for all pages.
 \fancyhf{} % clear header and footer fields
 \ifthenelse{\boolean{@titfl@twoside}}
-  {\fancyhead[LE]{\thepage\quad\smallcaps{\newlinetospace{\plainauthor}}}%
-    \fancyhead[RO]{\smallcaps{\newlinetospace{\plaintitle}}\quad\thepage}}
-  {\fancyhead[RE,RO]{\smallcaps{\newlinetospace{\plaintitle}}\quad\thepage}}
+  {\fancyhead[LE]{\thepage\quad\sc{\newlinetospace{\plainauthor}}}%
+    \fancyhead[RO]{\sc{\newlinetospace{\plaintitle}}\quad\thepage}}
+  {\fancyhead[RE,RO]{\sc{\newlinetospace{\plaintitle}}\quad\thepage}}
 
 
 % The `plain' page style is used on chapter opening pages.
@@ -1584,6 +1584,44 @@
 
 \newcommand{\titflskip}{\vspace\titflskipamount}
 
+%Define a month command
+\newcommand{\Month}{%
+  \ifcase\the\month
+  \or January% 1
+  \or February% 2
+  \or March% 3
+  \or April% 4
+  \or May% 5
+  \or June% 6
+  \or July% 7
+  \or August% 8
+  \or September% 9
+  \or October% 10
+  \or November% 11
+  \or December% 12
+  \fi}
+
+%Environment for lists
+\renewcommand{\labelitemii}{$\circ$}
+\renewcommand{\labelitemiii}{$\bullet$}
+\renewcommand{\labelitemiv}{$\circ$}
+
+\usepackage{enumitem}
+\setitemize{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
+
+%Subtitle commands
+\newcommand{\plainsubtitle}{}%     plain-text-only subtitle
+\newcommand{\subtitle}[1]{%
+  \gdef\@subtitle{#1}%
+  \renewcommand{\plainsubtitle}{#1}% use provided plain-text title
+  \ifthenelse{\isundefined{\hypersetup}}%
+    {}% hyperref is not loaded; do nothing
+    {\hypersetup{pdftitle={\plaintitle: \plainsubtitle{}}}}% set the PDF metadata title
+}
+
+%%
+%Set fonts
+
 
 %%
 % Produces a full title page
@@ -1591,13 +1629,14 @@
 \newcommand{\maketitlepage}[0]{%
   \cleardoublepage%
   {%
-  \sffamily%
   \begin{fullwidth}%
-  \fontsize{18}{20}\selectfont\par\noindent\textcolor{darkgray}{\allcaps{\thanklessauthor}}%
+  \fontsize{18}{20}\selectfont\par\noindent\textcolor{darkgray}{\sc{\thanklessauthor}}%
   \vspace{11.5pc}%
-  \fontsize{36}{40}\selectfont\par\noindent\textcolor{darkgray}{\allcaps{\thanklesstitle}}%
+  \fontsize{36}{40}\selectfont\par\noindent\textcolor{darkgray}{\sc{\thanklesstitle}}%
+  \vspace{2pc}%
+  \fontsize{22}{26}\selectfont\par\noindent\enspace\textcolor{darkgray}{\sc{\plainsubtitle}}%
   \vfill%
-  \fontsize{14}{16}\selectfont\par\noindent\allcaps{\thanklesspublisher}%
+  \fontsize{14}{16}\selectfont\par\noindent\sc{\thanklesspublisher}%
   \end{fullwidth}%
   }
   \thispagestyle{empty}%
@@ -1617,9 +1656,9 @@
     \let\@@author\@empty
     \let\@@date\@empty
     \ifthenelse{\boolean{@titfl@sfsidenotes}}{%
-      \gdef\@@title{\sffamily\LARGE\allcaps{\@title}\par}%
-      \gdef\@@author{\sffamily\Large\allcaps{\@author}\par}%
-      \gdef\@@date{\sffamily\Large\allcaps{\@date}\par}%
+      \gdef\@@title{\LARGE{\@title}}%
+      \gdef\@@author{\Large{\@author}}%
+      \gdef\@@date{\Large{\@date}}%
     }{%
       \gdef\@@title{\LARGE\itshape\@title\par}%
       \gdef\@@author{\Large\itshape\@author\par}%
@@ -1660,83 +1699,110 @@
 %%
 % Make Tuftian-style section headings and TOC formatting
 
+\titleformat{\part}%
+  [display]% shape
+  {\begin{fullwidth}}% format applied to label+text
+  {\itshape\Huge\hfill\thepart}% label
+  {0pt}% horizontal separation between label and title body
+  {\Huge\itshape\hfill}% before the title body
+  [\end{fullwidth}]% after the title body
+
 \titleformat{\chapter}%
   [display]% shape
-  {\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
-  {\itshape\huge\thechapter}% label
-  {0pt}% horizontal separation between label and title body
-  {\huge\rmfamily\itshape}% before the title body
+  {\Huge\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+  {\thechapter}% label
+  {1em}% horizontal separation between label and title body
+  {}% before the title body
   [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\section}%
-  [hang]% shape
-  {\normalfont\Large\itshape}% format applied to label+text
+  [display]% shape
+  {\Huge\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
   {\thesection}% label
   {1em}% horizontal separation between label and title body
   {}% before the title body
-  []% after the title body
+  [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\subsection}%
-  [hang]% shape
-  {\normalfont\large\itshape}% format applied to label+text
+  [display]% shape
+  {\Huge\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
   {\thesubsection}% label
   {1em}% horizontal separation between label and title body
   {}% before the title body
-  []% after the title body
+  [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
+
+\titleformat{\subsubsection}%
+  [display]% shape
+  {\LARGE\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+  {\thesubsubsection}% label
+  {1em}% horizontal separation between label and title body
+  {\textbf}% before the title body
+  [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\paragraph}%
-  [runin]% shape
-  {\normalfont\itshape}% format applied to label+text
+  [display]% shape
+  {\LARGE\normalfont}% format applied to label+text
   {\theparagraph}% label
   {1em}% horizontal separation between label and title body
   {}% before the title body
   []% after the title body
 
-\titlespacing*{\chapter}{0pt}{50pt}{40pt}
-\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
-\titlespacing*{\subsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus.2ex}
-\titlespacing*{\subsubsection}{0pt}{3ex plus 1ex minus .2ex}{1.5ex plus.2ex}
+\titleformat{\subparagraph}%
+  [display]% shape
+  {\Large\normalfont}% format applied to label+text
+  {\thesubparagraph}% label
+  {1em}% horizontal separation between label and title body
+  {\textbf}% before the title body
+  []% after the title body
+
+%Spacing for titles
+\titlespacing*{\part}{0pt}{50pt}{40pt}
+\titlespacing*{\chapter}{0pt}{0pt}{30pt}
+\titlespacing*{\section}{0pt}{0pt}{30pt}
+\titlespacing*{\subsection}{0pt}{0pt}{30pt}
+\titlespacing*{\subsubsection}{0pt}{30pt}{10pt}
+\titlespacing*{\paragraph}{0pt}{30pt}{10pt}
 \titlespacing*{\subparagraph}{0pt}{2.75ex plus 1ex minus .2ex}{1.5ex plus.2ex}
+
+%Section and sub-section breaks so they emulate chapter behaviour
+\newcommand{\chapterbreak}{\clearpage}
+\newcommand{\sectionbreak}{\clearpage}
+\newcommand{\subsectionbreak}{\clearpage}
+
 
 % Formatting for main TOC (printed in front matter)
 % {section} [left] {above} {before w/label} {before w/o label} {filler + page} [after]
 \ifthenelse{\boolean{@titfl@toc}}{%
-  \titlecontents{part}% FIXME
+  \titlecontents{part}%
     [0em] % distance from left margin
-    {\vspace{1.5\baselineskip}\begin{fullwidth}\LARGE\rmfamily\itshape} % above (global formatting of entry)
-    {\contentslabel{2em}} % before w/label (label = ``II'')
+    {\vspace{2.5\baselineskip}\huge} % above (global formatting of entry)
+    {} % before w/label (label = ``II'')
     {} % before w/o label
-    {\rmfamily\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
-    [\end{fullwidth}] % after
+    {} % filler + page (leaders and page num)
+    [] % after
   \titlecontents{chapter}%
-    [0em] % distance from left margin
-    {\vspace{1.5\baselineskip}\begin{fullwidth}\LARGE\rmfamily\itshape} % above (global formatting of entry)
-    {\hspace*{0em}\contentslabel{2em}} % before w/label (label = ``2'')
-    {\hspace*{0em}} % before w/o label
-    {\rmfamily\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
-    [\end{fullwidth}] % after
-  \titlecontents{section}% FIXME
-    [0em] % distance from left margin
-    {\vspace{0\baselineskip}\begin{fullwidth}\Large\rmfamily\itshape} % above (global formatting of entry)
-    {\hspace*{2em}\contentslabel{2em}} % before w/label (label = ``2.6'')
-    {\hspace*{2em}} % before w/o label
-    {\rmfamily\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
-    [\end{fullwidth}] % after
-  \titlecontents{subsection}% FIXME
-    [0em] % distance from left margin
-    {\vspace{0\baselineskip}\begin{fullwidth}\large\rmfamily\itshape} % above (global formatting of entry)
-    {\hspace*{4em}\contentslabel{4em}} % before w/label (label = ``2.6.1'')
-    {\hspace*{4em}} % before w/o label
-    {\rmfamily\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
-    [\end{fullwidth}] % after
-  \titlecontents{paragraph}% FIXME
-    [0em] % distance from left margin
-    {\vspace{0\baselineskip}\begin{fullwidth}\normalsize\rmfamily\itshape} % above (global formatting of entry)
-    {\hspace*{6em}\contentslabel{2em}} % before w/label (label = ``2.6.0.0.1'')
-    {\hspace*{6em}} % before w/o label
-    {\rmfamily\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
-    [\end{fullwidth}] % after
+    [3em] % distance from left margin
+    {\vspace{0.7\baselineskip}\LARGE\itshape} % above (global formatting of entry)
+    {\contentslabel{2em}} % before w/label (label = ``2'')
+    {} % before w/o label
+    {\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    [] % after
+  \titlecontents{section}%
+    [5em] % distance from left margin
+    {\vspace{0.2\baselineskip}\Large\itshape} % above (global formatting of entry)
+    {\contentslabel{2em}} % before w/label (label = ``2.6'')
+    {} % before w/o label
+    {\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    [] % after
+  \titlecontents{subsection}%
+    [7em] % distance from left margin
+    {\vspace{0.05\baselineskip}\Large} % above (global formatting of entry)
+    {contentslabel{2em}} % before w/label (label = ``2.6.1'')
+    {} % before w/o label
+    {\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    [] % after
 }{}
+
 
 %%
 % Format lists of figures/tables

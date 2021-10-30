@@ -70,6 +70,12 @@
 \DeclareOptionX[titfl]<common>{sfsidenotes}{\setboolean{@titfl@sfsidenotes}{true}}
 
 %%
+% `rmalltext' option -- stops main text body being sans serif 
+
+\newboolean{@tufte@rmalltext}
+\DeclareOptionX[titfl]<common>{rmalltext}{\setboolean{@tufte@rmalltext}{true}}
+
+%%
 % `symmetric' option -- puts marginpar space to the outside edge of the page
 %   Note: this option forces the twoside option (see the .cls files)
 
@@ -302,13 +308,17 @@
   \setboolean{@titfl@luatex}{false}
 }
 
-\ifthenelse{\boolean{@titfl@luatex}}{%
-  \RequirePackage{fontspec}
-  \RequirePackage[osf,sc]{mathpazo}
-  \setmainfont[Renderer=Basic, Numbers=OldStyle, Scale = 1.0]{TeX Gyre Pagella}
-  \setsansfont[Renderer=Basic, Scale=0.90]{TeX Gyre Heros}
-  \setmonofont[Renderer=Basic]{TeX Gyre Cursor}
-}{}
+%%
+% Set fonts
+\RequirePackage{fontspec}
+\usepackage[sfdefault]{inter}
+\newfontfamily\tuftefont[]{ETbb}
+
+%%
+% Set the text for the main body
+%\ifthenelse{\boolean{@titfl@rmalltext}}
+%  {}
+%  {} %Set text of main body
 
 %%
 % Globally sets the length
@@ -431,6 +441,8 @@
 }
 \@titfl@reset@par
 
+\usepackage[parfill]{parskip}
+
 % Paragraph indentation and separation for marginal text
 \newcommand{\@titfl@margin@par}{%
   \setlength{\RaggedRightParindent}{0.5pc}%
@@ -468,7 +480,7 @@
 
 \ifthenelse{\boolean{@titfl@sfsidenotes}}
   {\newcommand{\@titfl@marginfont}{\normalfont\footnotesize\sffamily}}
-  {\newcommand{\@titfl@marginfont}{\normalfont\footnotesize}}
+  {\newcommand{\@titfl@marginfont}{\normalfont\footnotesize\tuftefont}}
 
 \newcommand*{\@titfl@sidenote@font}{\@titfl@marginfont}
 \newcommand*{\@titfl@caption@font}{\@titfl@marginfont}
@@ -833,57 +845,6 @@
     \@titfl@pkghook@post@bidi%
   }%
 }{}
-
-%%
-% Environments for info boxes
-\usepackage[most]{tcolorbox}
-\usepackage{etoolbox}
-\usepackage{graphicx}
-
-\definecolor{info}{HTML}{66bbff}
-\definecolor{danger}{HTML}{ff6666}
-\definecolor{caution}{HTML}{f77d05}
-\definecolor{tick}{HTML}{26cb7c}
-\definecolor{ANZCA}{HTML}{93002e}
-\definecolor{CICM}{HTML}{0177a6}
-\definecolor{dual}{HTML}{69019d}
-
-\tcbset{common/.style={%
-    left=2.8em,
-    right=1.4em,
-    top=1.4em,
-    bottom=1.4em,
-    colback=#1!10,
-    colframe=#1,
-    rounded corners,
-    arc=2pt,
-    boxrule=0pt,
-    frame hidden,
-    enhanced,
-    overlay={%
-        \begin{tcbclipframe}
-            \draw[#1,line width=3pt] (frame.north west) -- (frame.south west);
-            \def\myboxicon{Y}
-            \ifstrequal{#1}{ANZCA}{\def\myboxicon{}}{}
-            \ifstrequal{#1}{CICM}{\def\myboxicon{}}{}
-            \ifstrequal{#1}{dual}{\def\myboxicon{}}{}
-            \ifcsempty{myboxicon}{}{
-                \node at ([xshift=1.5em]frame.west) {\includegraphics[width=1em]{png/#1.png}};
-            }
-        \end{tcbclipframe}
-    }
-    }
-}
-
-\newenvironment{info}{\begin{tcolorbox}[common={info}]}{\end{tcolorbox}}
-\newenvironment{danger}{\begin{tcolorbox}[common={danger}]}{\end{tcolorbox}}
-\newenvironment{caution}{\begin{tcolorbox}[common={caution}]}{\end{tcolorbox}}
-\newenvironment{tick}{\begin{tcolorbox}[common={tick}]}{\end{tcolorbox}}
-\newenvironment{ANZCA}{\begin{tcolorbox}[common={ANZCA}]}{\end{tcolorbox}}
-\newenvironment{CICM}{\begin{tcolorbox}[common={CICM}]}{\end{tcolorbox}}
-\newenvironment{dual}{\begin{tcolorbox}[common={dual}]}{\end{tcolorbox}}
-
-
 
 %%
 % A function that removes leading and trailing spaces from the supplied macro.
@@ -1601,12 +1562,62 @@
   \or December% 12
   \fi}
 
+%%
+% Environments for info boxes
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{etoolbox}
+\RequirePackage{graphicx}
+
+\definecolor{info}{HTML}{66bbff}
+\definecolor{danger}{HTML}{ff6666}
+\definecolor{caution}{HTML}{f77d05}
+\definecolor{tick}{HTML}{26cb7c}
+\definecolor{ANZCA}{HTML}{93002e}
+\definecolor{CICM}{HTML}{0177a6}
+\definecolor{dual}{HTML}{69019d}
+
+\tcbset{common/.style={%
+    left=2.8em,
+    right=1.4em,
+    top=1.4em,
+    bottom=1.4em,
+    colback=#1!10,
+    colframe=#1,
+    rounded corners,
+    arc=2pt,
+    boxrule=0pt,
+    frame hidden,
+    enhanced,
+    overlay={%
+        \begin{tcbclipframe}
+            \draw[#1,line width=3pt] (frame.north west) -- (frame.south west);
+            \def\myboxicon{Y}
+            \ifstrequal{#1}{ANZCA}{\def\myboxicon{}}{}
+            \ifstrequal{#1}{CICM}{\def\myboxicon{}}{}
+            \ifstrequal{#1}{dual}{\def\myboxicon{}}{}
+            \ifcsempty{myboxicon}{}{
+                \node at ([xshift=1.5em]frame.west) {\includegraphics[width=1em]{png/#1.png}};
+            }
+        \end{tcbclipframe}
+    }
+    }
+}
+
+\newenvironment{info}{\begin{tcolorbox}[common={info}]}{\end{tcolorbox}}
+\newenvironment{danger}{\begin{tcolorbox}[common={danger}]}{\end{tcolorbox}}
+\newenvironment{caution}{\begin{tcolorbox}[common={caution}]}{\end{tcolorbox}}
+\newenvironment{tick}{\begin{tcolorbox}[common={tick}]}{\end{tcolorbox}}
+\newenvironment{ANZCA}{\begin{tcolorbox}[common={ANZCA}]}{\end{tcolorbox}}
+\newenvironment{CICM}{\begin{tcolorbox}[common={CICM}]}{\end{tcolorbox}}
+\newenvironment{dual}{\begin{tcolorbox}[common={dual}]}{\end{tcolorbox}}
+
+
 %Environment for lists
 \renewcommand{\labelitemii}{$\circ$}
 \renewcommand{\labelitemiii}{$\bullet$}
 \renewcommand{\labelitemiv}{$\circ$}
 
-\usepackage{enumitem}
+\RequirePackage{enumitem}
 \setitemize{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
 
 %Subtitle commands
@@ -1620,23 +1631,19 @@
 }
 
 %%
-%Set fonts
-
-
-%%
 % Produces a full title page
 
 \newcommand{\maketitlepage}[0]{%
   \cleardoublepage%
   {%
   \begin{fullwidth}%
-  \fontsize{18}{20}\selectfont\par\noindent\textcolor{darkgray}{\sc{\thanklessauthor}}%
+  \fontsize{18}{20}\selectfont\par\noindent\textcolor{darkgray}{\sc{\tuftefont\thanklessauthor}}%
   \vspace{11.5pc}%
-  \fontsize{36}{40}\selectfont\par\noindent\textcolor{darkgray}{\sc{\thanklesstitle}}%
+  \fontsize{36}{40}\selectfont\par\noindent\textcolor{darkgray}{\sc{\tuftefont\thanklesstitle}}%
   \vspace{2pc}%
-  \fontsize{22}{26}\selectfont\par\noindent\enspace\textcolor{darkgray}{\sc{\plainsubtitle}}%
+  \fontsize{22}{26}\selectfont\par\noindent\enspace\textcolor{darkgray}{\sc{\tuftefont\plainsubtitle}}%
   \vfill%
-  \fontsize{14}{16}\selectfont\par\noindent\sc{\thanklesspublisher}%
+  \fontsize{14}{16}\selectfont\par\noindent\sc{\tuftefont\thanklesspublisher}%
   \end{fullwidth}%
   }
   \thispagestyle{empty}%
@@ -1704,7 +1711,7 @@
   {\begin{fullwidth}}% format applied to label+text
   {\itshape\Huge\hfill\thepart}% label
   {0pt}% horizontal separation between label and title body
-  {\Huge\itshape\hfill}% before the title body
+  {\Huge\tuftefont\itshape\hfill}% before the title body
   [\end{fullwidth}]% after the title body
 
 \titleformat{\chapter}%
@@ -1712,7 +1719,7 @@
   {\Huge\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
   {\thechapter}% label
   {1em}% horizontal separation between label and title body
-  {}% before the title body
+  {\tuftefont}% before the title body
   [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\section}%
@@ -1720,7 +1727,7 @@
   {\Huge\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
   {\thesection}% label
   {1em}% horizontal separation between label and title body
-  {}% before the title body
+  {\tuftefont}% before the title body
   [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\subsection}%
@@ -1728,7 +1735,7 @@
   {\Huge\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
   {\thesubsection}% label
   {1em}% horizontal separation between label and title body
-  {}% before the title body
+  {\tuftefont}% before the title body
   [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\subsubsection}%
@@ -1736,7 +1743,7 @@
   {\LARGE\relax\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
   {\thesubsubsection}% label
   {1em}% horizontal separation between label and title body
-  {\textbf}% before the title body
+  {\tuftefont\textbf}% before the title body
   [\ifthenelse{\NOT\boolean{@titfl@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \titleformat{\paragraph}%
@@ -1744,7 +1751,7 @@
   {\LARGE\normalfont}% format applied to label+text
   {\theparagraph}% label
   {1em}% horizontal separation between label and title body
-  {}% before the title body
+  {\tuftefont}% before the title body
   []% after the title body
 
 \titleformat{\subparagraph}%
@@ -1752,7 +1759,7 @@
   {\Large\normalfont}% format applied to label+text
   {\thesubparagraph}% label
   {1em}% horizontal separation between label and title body
-  {\textbf}% before the title body
+  {\tuftefont\textbf}% before the title body
   []% after the title body
 
 %Spacing for titles
@@ -1775,31 +1782,31 @@
 \ifthenelse{\boolean{@titfl@toc}}{%
   \titlecontents{part}%
     [0em] % distance from left margin
-    {\vspace{2.5\baselineskip}\huge} % above (global formatting of entry)
+    {\vspace{2.5\baselineskip}\huge\tuftefont} % above (global formatting of entry)
     {} % before w/label (label = ``II'')
     {} % before w/o label
-    {} % filler + page (leaders and page num)
+    {\tuftefont} % filler + page (leaders and page num)
     [] % after
   \titlecontents{chapter}%
     [3em] % distance from left margin
-    {\vspace{0.7\baselineskip}\LARGE\itshape} % above (global formatting of entry)
+    {\vspace{0.7\baselineskip}\LARGE\tuftefont\itshape} % above (global formatting of entry)
     {\contentslabel{2em}} % before w/label (label = ``2'')
     {} % before w/o label
-    {\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    {\tuftefont\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
     [] % after
   \titlecontents{section}%
     [5em] % distance from left margin
-    {\vspace{0.2\baselineskip}\Large\itshape} % above (global formatting of entry)
+    {\vspace{0.2\baselineskip}\Large\tuftefont\itshape} % above (global formatting of entry)
     {\contentslabel{2em}} % before w/label (label = ``2.6'')
     {} % before w/o label
-    {\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    {\tuftefont\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
     [] % after
   \titlecontents{subsection}%
     [7em] % distance from left margin
-    {\vspace{0.05\baselineskip}\Large} % above (global formatting of entry)
+    {\vspace{0.05\baselineskip}\tuftefont\Large} % above (global formatting of entry)
     {contentslabel{2em}} % before w/label (label = ``2.6.1'')
     {} % before w/o label
-    {\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
+    {\tuftefont\upshape\qquad\thecontentspage} % filler + page (leaders and page num)
     [] % after
 }{}
 
@@ -2118,4 +2125,3 @@
 %%
 % End of file
 \endinput
-

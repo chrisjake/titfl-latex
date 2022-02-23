@@ -1619,6 +1619,22 @@
 
 \RequirePackage{enumitem}
 \setitemize{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
+\setlistdepth{9}
+
+%List styles
+\newcommand*\smallsquare{\mathbin{\vcenter{\hbox{\rule{.5ex}{.5ex}}}}}
+
+\setlist[itemize,1]{label=$\bullet$}
+\setlist[itemize,2]{label=$\circ$}
+\setlist[itemize,3]{label=$\smallsquare$}
+\setlist[itemize,4]{label=$\bullet$}
+\setlist[itemize,5]{label=$\circ$}
+\setlist[itemize,6]{label=$\smallsquare$}
+\setlist[itemize,7]{label=$\bullet$}
+\setlist[itemize,8]{label=$\circ$}
+\setlist[itemize,9]{label=$\smallsquare$}
+
+\renewlist{itemize}{itemize}{9}
 
 %Subtitle commands
 \newcommand{\plainsubtitle}{}%     plain-text-only subtitle
